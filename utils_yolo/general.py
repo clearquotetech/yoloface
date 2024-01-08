@@ -16,9 +16,9 @@ import torch
 import torchvision
 import yaml
 
-from utils.google_utils import gsutil_getsize
-from utils.metrics import fitness
-from utils.torch_utils import init_torch_seeds
+from utils_yolo.google_utils import gsutil_getsize
+from utils_yolo.metrics import fitness
+from utils_yolo.torch_utils import init_torch_seeds
 
 # Settings
 torch.set_printoptions(linewidth=320, precision=5, profile='long')
@@ -441,6 +441,7 @@ def non_max_suppression_face(prediction, conf_thres=0.25, iou_thres=0.45, classe
         i = torchvision.ops.nms(boxes, scores, iou_thres)  # NMS
         #if i.shape[0] > max_det:  # limit detections
         #    i = i[:max_det]
+        box_scores = scores[i]
         if merge and (1 < n < 3E3):  # Merge NMS (boxes merged using weighted mean)
             # update boxes as boxes(i,4) = weights(i,n) * boxes(n,4)
             iou = box_iou(boxes[i], boxes) > iou_thres  # iou matrix
@@ -453,7 +454,7 @@ def non_max_suppression_face(prediction, conf_thres=0.25, iou_thres=0.45, classe
         if (time.time() - t) > time_limit:
             break  # time limit exceeded
 
-    return output
+    return output, box_scores
 
 
 def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=None, agnostic=False, labels=()):

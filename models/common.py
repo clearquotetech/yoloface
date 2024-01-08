@@ -1,16 +1,17 @@
 # This file contains modules common to various models
 
 import math
-
+import sys
+sys.path.append("..")
 import numpy as np
 import requests
 import torch
 import torch.nn as nn
 from PIL import Image, ImageDraw
 
-from utils.datasets import letterbox
-from utils.general import non_max_suppression, make_divisible, scale_coords, xyxy2xywh
-from utils.plots import color_list
+from utils_yolo.datasets import letterbox
+from utils_yolo.general import non_max_suppression, make_divisible, scale_coords, xyxy2xywh
+from utils_yolo.plots import color_list
 
 def autopad(k, p=None):  # kernel, padding
     # Pad to 'same'

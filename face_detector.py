@@ -1,4 +1,4 @@
-import joblib
+#import joblib
 import os
 import sys
 import torch
@@ -12,11 +12,12 @@ import warnings
 
 from math import sqrt
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname("__file__"), '..')))
+
 from models.common import Conv
 from models.yolo import Model
-from utils.datasets import letterbox
-from utils.preprocess_utils import align_faces
-from utils.general import check_img_size, non_max_suppression_face, \
+from utils_yolo.datasets import letterbox
+from utils_yolo.preprocess_utils import align_faces
+from utils_yolo.general import check_img_size, non_max_suppression_face, \
     scale_coords,scale_coords_landmarks,filter_boxes
 
 class YoloDetector:
@@ -41,9 +42,11 @@ class YoloDetector:
 
     def init_detector(self,weights_name,config_name):
         print(self.device)
-        model_path = os.path.join(self._class_path,'weights/',weights_name)
+        #model_path = os.path.join(self._class_path,'weights/',weights_name)
+        model_path = weights_name
         print(model_path)
-        config_path = os.path.join(self._class_path,'models/',config_name)
+        #config_path = os.path.join(self._class_path,'models/',config_name)
+        config_path = config_name
         state_dict = torch.load(model_path)
         detector = Model(cfg=config_path)
         detector.load_state_dict(state_dict)
@@ -87,7 +90,7 @@ class YoloDetector:
         bboxes = [[] for i in range(len(origimgs))]
         landmarks = [[] for i in range(len(origimgs))]
         
-        pred = non_max_suppression_face(pred, conf_thres, iou_thres)
+        pred, box_scores = non_max_suppression_face(pred, conf_thres, iou_thres)
         
         for i in range(len(origimgs)):
             img_shape = origimgs[i].shape
@@ -108,7 +111,7 @@ class YoloDetector:
                 lm = [lm[i:i+2] for i in range(0,len(lm),2)]
                 bboxes[i].append(box)
                 landmarks[i].append(lm)
-        return bboxes, landmarks
+        return bboxes, box_scores, landmarks
 
     def get_frontal_predict(self, box, points):
         '''
@@ -169,20 +172,20 @@ class YoloDetector:
             bboxes = [[] for i in range(len(origimgs))]
             points = [[] for i in range(len(origimgs))]
             for num, img in enumerate(images):
-                with torch.inference_mode(): # change this with torch.no_grad() for pytorch <1.8 compatibility
+                with torch.no_grad(): # change this with torch.no_grad() for pytorch <1.8 compatibility
                     single_pred = self.detector(img)[0]
                     print(single_pred.shape)
-                bb, pt = self._postprocess(img, [origimgs[num]], single_pred, conf_thres, iou_thres)
+                bb, box_scores, pt = self._postprocess(img, [origimgs[num]], single_pred, conf_thres, iou_thres)
                 #print(bb)
                 bboxes[num] = bb[0]
                 points[num] = pt[0]
         else:
             images = self._preprocess(images)
-            with torch.inference_mode(): # change this with torch.no_grad() for pytorch <1.8 compatibility
+            with torch.no_grad(): # change this with torch.no_grad() for pytorch <1.8 compatibility
                 pred = self.detector(images)[0]
-            bboxes, points = self._postprocess(images, origimgs, pred, conf_thres, iou_thres)
+            bboxes,box_scores, points = self._postprocess(images, origimgs, pred, conf_thres, iou_thres)
 
-        return bboxes, points
+        return bboxes, box_scores, points
 
     def __call__(self,*args):
         return self.predict(*args)
