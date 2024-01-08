@@ -455,7 +455,7 @@ def non_max_suppression_face(prediction, conf_thres=0.25, iou_thres=0.45, classe
         if (time.time() - t) > time_limit:
             break  # time limit exceeded
 
-    if output[0].shape[0] == 0:
+    if output[0].shape[0] == 0: #if no faces detected
         box_scores = []
     return output, box_scores
 
