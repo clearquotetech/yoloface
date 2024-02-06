@@ -11,8 +11,8 @@ import cv2
 #import matplotlib
 #import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-import seaborn as sns
+#import pandas as pd
+#import seaborn as sns
 import torch
 import yaml
 from PIL import Image, ImageDraw
