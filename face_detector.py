@@ -44,7 +44,7 @@ class YoloDetector:
         print(self.device)
         #model_path = os.path.join(self._class_path,'weights/',weights_name)
         model_path = weights_name
-        print(model_path)
+        print("model_path: ", model_path)
         #config_path = os.path.join(self._class_path,'models/',config_name)
         config_path = config_name
         state_dict = torch.load(model_path)

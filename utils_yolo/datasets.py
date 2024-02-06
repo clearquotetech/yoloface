@@ -18,7 +18,7 @@ import torch
 import torch.nn.functional as F
 from PIL import Image, ExifTags
 from torch.utils.data import Dataset
-from tqdm import tqdm
+#from tqdm import tqdm
 
 from utils_yolo.general import xyxy2xywh, xywh2xyxy, xywhn2xyxy, clean_str
 from utils_yolo.torch_utils import torch_distributed_zero_first
