@@ -2,6 +2,7 @@ import argparse
 import logging
 import math
 import sys
+import os
 from copy import deepcopy
 from pathlib import Path
 
@@ -10,6 +11,8 @@ import torch.nn as nn
 
 sys.path.append('./')  # to run '$ python *.py' files in subdirectories
 logger = logging.getLogger(__name__)
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 from models.common import Conv, Bottleneck, SPP, DWConv, Focus, BottleneckCSP, C3, ShuffleV2Block, Concat, NMS, autoShape, StemBlock
 from models.experimental import MixConv2d, CrossConv
@@ -98,7 +101,7 @@ class Model(nn.Module):
         else:  # is *.yaml
             import yaml  # for torch hub
             self.yaml_file = Path(cfg).name
-            with open(cfg) as f:
+            with open(os.path.join(script_dir, cfg)) as f:
                 self.yaml = yaml.load(f, Loader=yaml.FullLoader)  # model dict
 
         # Define model
